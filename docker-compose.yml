@@ -3,7 +3,7 @@ services:
     image: ghcr.io/eugenmayer/traefik:2.x
     environment:
       TRAEFIK_DOCKER_ENABLE: 'true'
-      TRAEFIK_ADMIN_ENABLE: 'true'
+      TRAEFIK_ADMIN_ENABLE: 'false'
       TRAEFIK_ADMIN_SSL: 'false'
       TRAEFIK_LOG_LEVEL: 'info'
       TRAEFIK_DOCKER_DEFAULT_RULE: 'Host(`{{ normalize .Name }}.docker.lan`)'
@@ -21,6 +21,15 @@ services:
       traefik.enable: false
     networks:
       - tc-net
+
+  web: # upstream/frontend 3: http://foo.bar.lan
+    image: eugenmayer/whoami:single
+    labels:
+      traefik.enable: true
+      traefik.http.routers.web.rule: 'Host(`foo.bar.lan`)' # nano /etc/hosts - 127.0.0.1 foo.bar.lan
+    networks:
+      - tc-net
+
 networks:
   tc-net:
     external: true
